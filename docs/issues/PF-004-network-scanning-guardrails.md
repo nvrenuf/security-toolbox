@@ -30,6 +30,8 @@ This issue is in the parallel/deferred network track. It is not required for the
 - Record authorization and scope in the network scan manifest.
 - Clearly mark network scanning as guarded and non-default.
 - Determine whether network scanning remains in this repository as a separately bounded subsystem, moves to another repository, or is deprecated.
+- All automated validation for network guardrails must use mocks, fixtures, or dry-run parsing. Real network scanning is prohibited in unit tests, integration tests, and CI.
+- Tests must use a mocked or stubbed `nmap` executable placed earlier in `PATH`. The stub must record arguments, never open a network connection, return controlled exit codes, and allow tests to verify rejection behavior before real Nmap would be invoked.
 
 ## Implementation Steps
 
@@ -37,7 +39,8 @@ This issue is in the parallel/deferred network track. It is not required for the
 2. Add input validation.
 3. Add required authorization acknowledgement.
 4. Add timeout and CIDR-size controls.
-5. Update network pipeline docs and tests.
+5. Add mock-only tests for guardrail behavior.
+6. Update network pipeline docs and tests.
 
 ## Files Likely Affected
 
@@ -51,7 +54,13 @@ This issue is in the parallel/deferred network track. It is not required for the
 - [ ] Network scans refuse to run without explicit authorization.
 - [ ] Oversized CIDR ranges are rejected.
 - [ ] Invalid targets are rejected.
+- [ ] Option-like targets beginning with `-` are rejected.
 - [ ] Timeouts are enforced.
+- [ ] Rate controls are enforced.
+- [ ] Valid bounded input reaches only the mocked Nmap executable in automated tests.
+- [ ] Timeout and rate arguments are passed correctly to the mock.
+- [ ] CI performs no real network scans.
+- [ ] Tests prove invalid, unauthorized, and oversized targets are rejected before Nmap would be invoked.
 - [ ] Documentation states authorization requirements.
 - [ ] The ownership decision is recorded before feature expansion.
 - [ ] Docs state PF-004 is not part of the repository assessment MVP critical path.
@@ -60,15 +69,16 @@ This issue is in the parallel/deferred network track. It is not required for the
 
 ```bash
 bash -n scripts/network/network_scan.sh
-./scripts/network/network_scan.sh 10.0.0.0/8
+python -m pytest tests/test_network_guardrails.py
 ```
 
-The second command should fail safely unless an approved guardrail path is provided.
+The pytest suite must use a mocked or stubbed `nmap` executable placed earlier in `PATH`. The stub must record the arguments it receives, never open a network connection, return controlled exit codes, and allow tests to verify that invalid, unauthorized, or oversized targets are rejected before Nmap would be invoked.
 
 ## Safety / Security Constraints
 
-- Do not run real external scans during development or CI.
-- Use local or reserved documentation addresses for examples.
+- Do not run real network scans in unit tests, integration tests, or CI.
+- Do not invoke Nmap against a real hostname, IP address, CIDR, loopback address, private range, documentation range, or external target in automated validation.
+- Use mocks, fixtures, or dry-run parsing for all automated guardrail validation.
 
 ## Out of Scope
 
