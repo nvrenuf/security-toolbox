@@ -8,11 +8,18 @@ Prevent unsafe network scanning by requiring explicit authorization, bounded sco
 
 The current network scanner accepts one hostname, IP, or CIDR and runs Nmap with minimal validation. Network scanning has different legal and operational risk than repository scanning.
 
+This issue is in the parallel/deferred network track. It is not required for the repository assessment MVP and must not delay normalized findings, deterministic reports, CI integration, or CCT policy work.
+
 ## Source of Truth
 
 - `PROJECT_PACKAGE.md`
 - `docs/repo-boundaries.md`
 - `ISSUES_ORDER.md`
+
+## Dependencies
+
+- Blocked by the network-scanning ownership decision.
+- No feature expansion should occur before authorization and scope guardrails are complete.
 
 ## Requirements
 
@@ -22,10 +29,11 @@ The current network scanner accepts one hostname, IP, or CIDR and runs Nmap with
 - Add scan timeout and rate controls.
 - Record authorization and scope in the network scan manifest.
 - Clearly mark network scanning as guarded and non-default.
+- Determine whether network scanning remains in this repository as a separately bounded subsystem, moves to another repository, or is deprecated.
 
 ## Implementation Steps
 
-1. Decide whether network scanning remains in this repo.
+1. Record the network-scanning ownership decision.
 2. Add input validation.
 3. Add required authorization acknowledgement.
 4. Add timeout and CIDR-size controls.
@@ -45,6 +53,8 @@ The current network scanner accepts one hostname, IP, or CIDR and runs Nmap with
 - [ ] Invalid targets are rejected.
 - [ ] Timeouts are enforced.
 - [ ] Documentation states authorization requirements.
+- [ ] The ownership decision is recorded before feature expansion.
+- [ ] Docs state PF-004 is not part of the repository assessment MVP critical path.
 
 ## Tests / Verification Commands
 
@@ -65,6 +75,7 @@ The second command should fail safely unless an approved guardrail path is provi
 - Vulnerability exploitation.
 - Authenticated network scanning.
 - Production scanning scheduler.
+- Repository assessment normalized findings, reports, CI, and CCT policy work.
 
 ## Completion Checklist
 

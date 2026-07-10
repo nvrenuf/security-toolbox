@@ -13,6 +13,12 @@ The current bootstrap script is macOS-oriented and installs mutable upstream dep
 - `PROJECT_PACKAGE.md`
 - `docs/repo-boundaries.md`
 - `ISSUES_ORDER.md`
+- ADR created by `PF-000`
+
+## Dependencies
+
+- Blocked by `PF-000` so the runtime, packaging approach, and supported operating systems are recorded first.
+- Builds on `PF-001` because platform setup should install and launch the core engine and manifest-producing scanner orchestration.
 
 ## Requirements
 
@@ -21,14 +27,16 @@ The current bootstrap script is macOS-oriented and installs mutable upstream dep
 - Add a container or CI-friendly install path.
 - Avoid silently continuing after failed installs.
 - Keep target repository writes explicit and documented.
+- Use the packaging approach and supported operating systems recorded in the `PF-000` ADR.
 
 ## Implementation Steps
 
-1. Inventory current bootstrap behavior.
-2. Add a platform support matrix.
-3. Split mutable setup from pinned setup.
-4. Add CI/container setup documentation.
-5. Add verification commands for installed tools.
+1. Read the `PF-000` ADR.
+2. Inventory current bootstrap behavior.
+3. Add a platform support matrix aligned to the ADR.
+4. Split mutable setup from pinned setup.
+5. Add CI/container setup documentation.
+6. Add verification commands for installed tools and the core engine established by `PF-001`.
 
 ## Files Likely Affected
 
@@ -43,6 +51,7 @@ The current bootstrap script is macOS-oriented and installs mutable upstream dep
 - [ ] Tool version strategy is documented.
 - [ ] CI or container setup path exists.
 - [ ] Installer write behavior is documented accurately.
+- [ ] Setup docs explain how to launch the core engine established by `PF-001`.
 
 ## Tests / Verification Commands
 

@@ -13,10 +13,15 @@ The repository has no meaningful automated tests or CI. Without tests, later par
 - `PROJECT_PACKAGE.md`
 - `docs/architecture.md`
 - `ISSUES_ORDER.md`
+- ADR created by `PF-000`
+
+## Dependencies
+
+- Blocked by `PF-000`. Use the runtime, packaging approach, supported operating systems, and test framework recorded in the ADR.
 
 ## Requirements
 
-- Add a minimal test runner appropriate for the chosen runtime.
+- Add the test runner selected in the `PF-000` ADR.
 - Add shell syntax checks for existing scripts.
 - Add fixture-based tests for scanner output handling.
 - Add CI smoke checks that run without real scanner network access.
@@ -24,7 +29,7 @@ The repository has no meaningful automated tests or CI. Without tests, later par
 
 ## Implementation Steps
 
-1. Choose the test stack after the runtime decision.
+1. Read the `PF-000` ADR and use its selected runtime and test framework.
 2. Add fixtures for current scanner outputs and failure cases.
 3. Add unit or integration tests for status classification.
 4. Add a GitHub Actions workflow for tests.
@@ -39,7 +44,7 @@ The repository has no meaningful automated tests or CI. Without tests, later par
 
 ## Acceptance Criteria
 
-- [ ] Tests can run on a clean checkout.
+- [ ] Tests can run on a clean checkout using the framework selected in the `PF-000` ADR.
 - [ ] CI runs tests on pull requests.
 - [ ] Missing scanner behavior is covered.
 - [ ] Malformed output behavior is covered.
@@ -52,7 +57,7 @@ bash -n scripts/repo/scripts/security_scan.sh
 bash -n scripts/network/network_scan.sh
 ```
 
-Replace or extend these commands with the selected test runner.
+Replace or extend these commands with the test runner selected in the `PF-000` ADR.
 
 ## Safety / Security Constraints
 

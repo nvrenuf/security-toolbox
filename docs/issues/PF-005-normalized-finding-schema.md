@@ -25,7 +25,7 @@ Current reports depend on unstructured scanner text. The platform needs determin
 ## Implementation Steps
 
 1. Draft schema documentation.
-2. Add a JSON schema file if the chosen runtime supports validation.
+2. Add a JSON schema file using the runtime and validation approach recorded by `PF-000`.
 3. Add sample findings from current scanners.
 4. Add schema validation tests.
 5. Update report requirements to use normalized findings.

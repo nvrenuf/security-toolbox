@@ -13,22 +13,33 @@ The current Bash scan script swallows most scanner failures with `|| true`. A cl
 - `PROJECT_PACKAGE.md`
 - `docs/architecture.md`
 - `ISSUES_ORDER.md`
+- ADR created by `PF-000`
+
+## Dependencies
+
+- Blocked by `PF-000` so the core runtime and packaging approach are recorded first.
+- Blocked by `PF-003` so scanner status and manifest behavior can be covered by tests before implementation.
 
 ## Requirements
 
 - Define scanner states: `success_clean`, `success_findings`, `failure`, `unavailable`, `skipped`, and `not_applicable`.
 - Emit `manifest.json` for every scan.
 - Record scanner name, version, command, start time, end time, duration, exit code, status, raw output path, and error summary.
+- Record deterministic relative or canonical evidence paths for raw outputs.
+- Generate SHA-256 hashes for every raw scanner output written during the scan.
+- Record raw output SHA-256 hashes directly in `manifest.json`.
+- Clearly record when an expected output file is missing.
 - Preserve raw outputs outside the target repository.
 - Return a process exit code that distinguishes scanner health failure from policy failure when policy exists.
 
 ## Implementation Steps
 
-1. Choose the smallest implementation path that supports tests.
-2. Add a manifest writer.
-3. Wrap current Gitleaks, `npm audit`, Semgrep, and Trivy calls with status capture.
-4. Keep existing raw output files for compatibility.
-5. Add tests for missing tool, failed command, skipped scanner, and successful scanner cases.
+1. Read the `PF-000` ADR and use the selected core runtime.
+2. Add or update tests from `PF-003` for scanner states, manifest fields, raw output hashing, and missing expected outputs.
+3. Add a manifest writer.
+4. Wrap current Gitleaks, `npm audit`, Semgrep, and Trivy calls with status capture.
+5. Keep existing raw output files for compatibility.
+6. Add SHA-256 hashing for raw scanner outputs and record hashes in `manifest.json`.
 
 ## Files Likely Affected
 
@@ -42,6 +53,10 @@ The current Bash scan script swallows most scanner failures with `|| true`. A cl
 - [ ] Scanner failures are not hidden as successful scans.
 - [ ] Missing tools are recorded as `unavailable`.
 - [ ] `npm audit` without `package.json` is recorded as `not_applicable`.
+- [ ] Every raw scanner output written during the scan has a SHA-256 hash in `manifest.json`.
+- [ ] Raw scanner output paths in `manifest.json` are deterministic relative paths or canonical paths.
+- [ ] Missing expected output files are recorded clearly.
+- [ ] Tests prove raw evidence hashes are generated and recorded.
 - [ ] Raw text outputs still exist for current users.
 
 ## Tests / Verification Commands
@@ -50,6 +65,7 @@ The current Bash scan script swallows most scanner failures with `|| true`. A cl
 bash -n scripts/repo/scripts/security_scan.sh
 ./scripts/repo/scripts/security_scan.sh
 test -f "$HOME/SecurityScans/security-toolbox/latest/manifest.json"
+grep -q "sha256" "$HOME/SecurityScans/security-toolbox/latest/manifest.json"
 ```
 
 ## Safety / Security Constraints
@@ -63,6 +79,7 @@ test -f "$HOME/SecurityScans/security-toolbox/latest/manifest.json"
 - Normalized finding schema.
 - SARIF output.
 - New scanner coverage.
+- Hash verification tooling, mismatch detection, and signing hardening. Those belong to `PF-017`.
 
 ## Completion Checklist
 

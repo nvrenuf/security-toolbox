@@ -9,8 +9,8 @@
 **Last Updated:** 2026-07-10  
 **Last Checkpoint:** CP-0001  
 **Current Focus:** Define the CCT-grade repository security assessment platform and create an executable backlog.  
-**Next Question:** Confirm the first implementation milestone and preferred runtime language for the core engine.  
-**Blocking Questions:** None for planning. Runtime choice affects implementation order.
+**Next Question:** Complete `PF-000` to select the core engine runtime and record the ADR before implementation begins.
+**Blocking Questions:** Implementation cannot begin until `PF-000` is complete. Open planning decisions remain: initial CCT CI gate policy, GitHub permission scope, SBOM format priority, and network-scanning ownership.
 
 ## Source of Truth
 
@@ -117,6 +117,8 @@ Reports must not say:
 
 - Preserve evidence outside target repositories by default.
 - Emit a scan manifest that lists target, scope, start time, end time, scanner versions, commands, exit codes, output paths, hashes, and status.
+- `PF-001` owns foundational SHA-256 hashing for raw scanner outputs written during the scan.
+- `PF-017` owns later hash verification, mismatch detection, integrity hardening for normalized outputs and reports, and the future signing path.
 - Distinguish scanner success, clean result, findings found, scanner failure, scanner unavailable, scanner skipped, and scanner not applicable.
 - Emit normalized JSON findings as the official source for policy and reports.
 - Emit SARIF where appropriate for code scanning and CI integrations.
@@ -125,10 +127,11 @@ Reports must not say:
 
 ## Short-Term Plan
 
-1. Build trustworthy scanner orchestration with explicit status handling.
-2. Add a normalized finding schema and deterministic JSON output.
-3. Add automated tests for scanner status, parsing, malformed output, and report generation.
-4. Replace report dependence on raw text interpretation with deterministic report generation.
+1. Complete `PF-000` to select the core engine runtime and record the ADR.
+2. Add automated tests and CI smoke checks.
+3. Build trustworthy scanner orchestration with explicit status handling and raw-evidence hashing.
+4. Add a normalized finding schema and deterministic JSON output.
+5. Replace report dependence on raw text interpretation with deterministic report generation.
 
 ## Medium-Term Plan
 
@@ -177,7 +180,7 @@ The intended architecture separates target repositories, scanner orchestration, 
 **Assistant Recommendation:** Preserve useful scanner scripts but introduce a separated core engine, normalized findings, deterministic reporting, policy profiles, and evidence integrity.  
 **Decision:** Plan the work as phased milestones instead of a full rewrite in this pass.  
 **Rationale:** The current repo is useful as a scaffold, but scanner status, output, tests, CI, and reporting need foundations before broader coverage.  
-**Implementation Impact:** Adds Project Forge docs, architecture boundaries, and issue drafts. Implementation should start with scanner orchestration and normalized findings.  
+**Implementation Impact:** Adds Project Forge docs, architecture boundaries, and issue drafts. Implementation should start with `PF-000`, then tests, scanner orchestration, and normalized findings.
 **Affected Files/Areas:** `PROJECT_PACKAGE.md`, `AGENTS.md`, `ISSUES_ORDER.md`, `docs/architecture.md`, `docs/repo-boundaries.md`, `docs/issues/`.  
 **Follow-up Issues Needed:** All issues listed in `ISSUES_ORDER.md`.  
 **Supersedes:** None
@@ -186,7 +189,6 @@ The intended architecture separates target repositories, scanner orchestration, 
 
 | Priority | Question | Why It Matters | Status |
 | --- | --- | --- | --- |
-| High | What runtime should the core engine use: Bash plus helper tools, Python, Node.js, Go, or another language? | The runtime choice affects packaging, tests, scanner adapter design, and CI support. | Open |
 | High | What is the minimum CCT policy gate for Phase 1: report-only, fail-on-critical, fail-on-policy-violation, or configurable by repo? | CI behavior and reviewer expectations depend on this. | Open |
 | High | Which GitHub organization and repository permissions will the tool be allowed to inspect? | Repository control assessment may need authenticated GitHub API access. | Open |
 | Medium | Which SBOM format is required first: CycloneDX, SPDX, or both? | This affects tool choice and downstream integrations. | Open |
@@ -212,4 +214,4 @@ The intended architecture separates target repositories, scanner orchestration, 
 
 ## Next Recommended Action
 
-Start with `PF-001` in `ISSUES_ORDER.md`: implement trustworthy scanner orchestration status and manifests without changing scanner coverage.
+Start with `PF-000` in `ISSUES_ORDER.md`: select the core engine runtime and record the ADR before implementation begins.

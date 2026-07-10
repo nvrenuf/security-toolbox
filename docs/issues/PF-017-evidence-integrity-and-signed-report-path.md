@@ -2,11 +2,11 @@
 
 ## Objective
 
-Add evidence integrity controls with hashes now and a clear path to signed manifests or signed reports later.
+Add integrity verification tooling, mismatch detection, and a clear path to signed manifests or signed reports after foundational raw-evidence hashing exists.
 
 ## Context
 
-CCT-grade assessments need evidence integrity. Reports should point to raw and normalized evidence with hashes so reviewers can detect accidental changes.
+CCT-grade assessments need evidence integrity. `PF-001` owns initial SHA-256 hashes for raw scanner outputs and records those hashes in `manifest.json`. This issue builds on that foundation by adding verification, mismatch detection, hashes for later artifacts, and a future signing path.
 
 ## Source of Truth
 
@@ -14,35 +14,46 @@ CCT-grade assessments need evidence integrity. Reports should point to raw and n
 - `docs/architecture.md`
 - `ISSUES_ORDER.md`
 
+## Dependencies
+
+- Builds on `PF-001`, which owns initial raw scanner output SHA-256 hashing in `manifest.json`.
+
 ## Requirements
 
-- Hash raw outputs, normalized outputs, reports, and SBOM files.
-- Include hashes in the scan manifest.
+- Add hash verification tooling for manifest-listed evidence.
+- Detect hash mismatches and missing manifest-listed files.
+- Extend integrity coverage to normalized outputs, reports, SBOMs, and later artifacts.
+- Add or update manifest verification behavior.
 - Add verification command or script.
-- Design, but do not necessarily implement, signed report support.
-- Document limitations of unsigned evidence.
+- Design, but do not necessarily implement, signed manifest or signed report support.
+- Document key-management and timestamping limitations.
 
 ## Implementation Steps
 
-1. Add hashing strategy.
-2. Add manifest fields for hashes.
-3. Add verification command.
-4. Add tests for hash mismatch detection.
-5. Document future signing path.
+1. Read the `PF-001` manifest and raw-evidence hashing behavior.
+2. Add verification command or script.
+3. Add hash mismatch and missing-file detection.
+4. Extend artifact hashing to normalized outputs, reports, SBOMs, and later artifacts.
+5. Add tests for hash mismatch detection and manifest verification.
+6. Document future signing path, key-management limits, and timestamping limits.
 
 ## Files Likely Affected
 
 - Manifest code
 - Evidence storage code
+- Verification tooling
 - Tests
 - README
 
 ## Acceptance Criteria
 
-- [ ] Manifest includes hashes for generated artifacts.
-- [ ] Verification detects changed artifacts.
+- [ ] Verification detects changed raw evidence files already hashed by `PF-001`.
+- [ ] Verification detects missing manifest-listed files.
+- [ ] Normalized outputs, reports, SBOMs, and later artifacts can be hashed and verified.
+- [ ] Manifest verification behavior is documented.
 - [ ] Reports reference manifest and evidence hashes.
-- [ ] Signing path is documented.
+- [ ] Signed manifest or signed report path is documented.
+- [ ] Key-management and timestamping limitations are documented.
 
 ## Tests / Verification Commands
 
@@ -59,6 +70,7 @@ git diff --check
 
 - Production key management.
 - Third-party timestamp authority integration.
+- Initial raw scanner output SHA-256 hashing in `manifest.json`; that belongs to `PF-001`.
 
 ## Completion Checklist
 

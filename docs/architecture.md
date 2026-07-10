@@ -6,7 +6,7 @@ This document describes the planned architecture for Security Toolbox as it grow
 
 ## Architecture Summary
 
-The platform should run scanners through a generic core engine, convert raw scanner outputs into normalized findings, evaluate policy, preserve evidence outside target repositories, and generate deterministic reports. CCT-specific policy and branding belong in a profile or workspace, not in the core engine.
+The platform should run scanners through a generic core engine, convert raw scanner outputs into normalized findings, evaluate policy, preserve evidence outside target repositories, and generate deterministic reports. CCT-specific policy and branding belong in a profile or workspace, not in the core engine. `PF-000` must select the runtime and record the ADR before implementation begins; Python is the recommended runtime unless repository evidence strongly contradicts it.
 
 ## Major Components
 
@@ -21,6 +21,7 @@ The platform should run scanners through a generic core engine, convert raw scan
 | Report generation | Produces technical and executive reports from normalized data. | Deterministic reports are official. AI narrative is optional enrichment. |
 | Report branding | Applies profile-specific naming, wording, and templates. | CCT and future LandmarkSignal branding must be separate from core logic. |
 | CI integration | Provides GitHub Actions, exit codes, annotations, and code-scanning upload. | CI gates must be configurable. |
+| Network scanning | Runs separately bounded network checks if retained. | Not required for the repository assessment MVP and must not block normalized findings, reports, CI, or CCT policy work. |
 
 ## Data Flow / Workflow
 
@@ -28,7 +29,7 @@ The platform should run scanners through a generic core engine, convert raw scan
 2. Detect target repository language ecosystems and applicable scanners.
 3. Create an evidence directory outside the target repository.
 4. Run scanner adapters with explicit timeouts and status capture.
-5. Store raw outputs and hash them.
+5. Store raw outputs and record SHA-256 hashes for them in the scan manifest.
 6. Normalize scanner outputs into JSON findings.
 7. Evaluate findings against policy, suppressions, exceptions, baselines, and regressions.
 8. Write a scan manifest and machine-readable outputs.
@@ -56,10 +57,9 @@ Default evidence storage remains outside target repositories:
   raw/
   normalized/
   reports/
-  hashes.txt
 ```
 
-The exact layout can evolve, but the manifest must identify all files, hashes, scanner versions, commands, timestamps, and statuses.
+The exact layout can evolve, but the manifest must identify all raw scanner outputs, SHA-256 hashes, scanner versions, commands, timestamps, and statuses. `PF-001` owns foundational raw-evidence hashing in `manifest.json`. `PF-017` owns later verification tooling, mismatch detection, hashes for normalized outputs and reports, and the future signed-manifest or signed-report path.
 
 ## Integration Points
 
@@ -96,7 +96,7 @@ Local execution should remain possible. CI execution should have deterministic p
 - Scanner failures are currently swallowed.
 - Official outputs are unstructured text.
 - There is no normalized finding schema.
-- There is no scan manifest or evidence hashing.
+- There is no scan manifest or foundational raw-evidence hashing.
 - There are no automated tests or CI workflows.
 - Bootstrap uses mutable upstream dependencies.
 - Network scanning lacks required guardrails.
